@@ -1,0 +1,739 @@
+{
+  "run_date": "2026-10-20",
+  "start_date": "2016-01-01",
+  "end_date": "latest",
+  "total_symbols": 78,
+  "successful_downloads": 77,
+  "failed_downloads": 1,
+  "flagged_issues_count": 2,
+  "records": [
+    {
+      "symbol": "HDFCBANK.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\HDFCBANK.csv"
+    },
+    {
+      "symbol": "ICICIBANK.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\ICICIBANK.csv"
+    },
+    {
+      "symbol": "SBIN.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\SBIN.csv"
+    },
+    {
+      "symbol": "KOTAKBANK.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\KOTAKBANK.csv"
+    },
+    {
+      "symbol": "AXISBANK.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\AXISBANK.csv"
+    },
+    {
+      "symbol": "BAJFINANCE.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\BAJFINANCE.csv"
+    },
+    {
+      "symbol": "TCS.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\TCS.csv"
+    },
+    {
+      "symbol": "INFY.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\INFY.csv"
+    },
+    {
+      "symbol": "HCLTECH.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\HCLTECH.csv"
+    },
+    {
+      "symbol": "WIPRO.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\WIPRO.csv"
+    },
+    {
+      "symbol": "SUNPHARMA.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\SUNPHARMA.csv"
+    },
+    {
+      "symbol": "DRREDDY.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\DRREDDY.csv"
+    },
+    {
+      "symbol": "CIPLA.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\CIPLA.csv"
+    },
+    {
+      "symbol": "HINDUNILVR.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\HINDUNILVR.csv"
+    },
+    {
+      "symbol": "ITC.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\ITC.csv"
+    },
+    {
+      "symbol": "NESTLEIND.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\NESTLEIND.csv"
+    },
+    {
+      "symbol": "BRITANNIA.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\BRITANNIA.csv"
+    },
+    {
+      "symbol": "MARUTI.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\MARUTI.csv"
+    },
+    {
+      "symbol": "TATAMOTORS.NS",
+      "rows": 0,
+      "first_date": null,
+      "last_date": null,
+      "years_history": 0.0,
+      "status": "FAILED_DOWNLOAD",
+      "raw_file": "data\\raw\\2026-10-20\\TATAMOTORS.csv"
+    },
+    {
+      "symbol": "M&M.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\M&M.csv"
+    },
+    {
+      "symbol": "BAJAJ-AUTO.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\BAJAJ-AUTO.csv"
+    },
+    {
+      "symbol": "RELIANCE.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\RELIANCE.csv"
+    },
+    {
+      "symbol": "NTPC.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\NTPC.csv"
+    },
+    {
+      "symbol": "POWERGRID.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\POWERGRID.csv"
+    },
+    {
+      "symbol": "TATASTEEL.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\TATASTEEL.csv"
+    },
+    {
+      "symbol": "JSWSTEEL.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\JSWSTEEL.csv"
+    },
+    {
+      "symbol": "HINDALCO.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\HINDALCO.csv"
+    },
+    {
+      "symbol": "LT.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\LT.csv"
+    },
+    {
+      "symbol": "TITAN.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\TITAN.csv"
+    },
+    {
+      "symbol": "ASIANPAINT.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\ASIANPAINT.csv"
+    },
+    {
+      "symbol": "CHOLAFIN.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\CHOLAFIN.csv"
+    },
+    {
+      "symbol": "FEDERALBNK.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\FEDERALBNK.csv"
+    },
+    {
+      "symbol": "IDFCFIRSTB.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\IDFCFIRSTB.csv"
+    },
+    {
+      "symbol": "PERSISTENT.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\PERSISTENT.csv"
+    },
+    {
+      "symbol": "COFORGE.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\COFORGE.csv"
+    },
+    {
+      "symbol": "MPHASIS.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\MPHASIS.csv"
+    },
+    {
+      "symbol": "LUPIN.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\LUPIN.csv"
+    },
+    {
+      "symbol": "AUROPHARMA.NS",
+      "rows": 2666,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\AUROPHARMA.csv"
+    },
+    {
+      "symbol": "ALKEM.NS",
+      "rows": 2666,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\ALKEM.csv"
+    },
+    {
+      "symbol": "MARICO.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\MARICO.csv"
+    },
+    {
+      "symbol": "DABUR.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\DABUR.csv"
+    },
+    {
+      "symbol": "GODREJCP.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\GODREJCP.csv"
+    },
+    {
+      "symbol": "TVSMOTOR.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\TVSMOTOR.csv"
+    },
+    {
+      "symbol": "BHARATFORG.NS",
+      "rows": 2666,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\BHARATFORG.csv"
+    },
+    {
+      "symbol": "ASHOKLEY.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\ASHOKLEY.csv"
+    },
+    {
+      "symbol": "TATAPOWER.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\TATAPOWER.csv"
+    },
+    {
+      "symbol": "BPCL.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\BPCL.csv"
+    },
+    {
+      "symbol": "JINDALSTEL.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\JINDALSTEL.csv"
+    },
+    {
+      "symbol": "SAIL.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\SAIL.csv"
+    },
+    {
+      "symbol": "BEL.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\BEL.csv"
+    },
+    {
+      "symbol": "CUMMINSIND.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\CUMMINSIND.csv"
+    },
+    {
+      "symbol": "HAVELLS.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\HAVELLS.csv"
+    },
+    {
+      "symbol": "VOLTAS.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\VOLTAS.csv"
+    },
+    {
+      "symbol": "PIDILITIND.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\PIDILITIND.csv"
+    },
+    {
+      "symbol": "SRF.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\SRF.csv"
+    },
+    {
+      "symbol": "MANAPPURAM.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\MANAPPURAM.csv"
+    },
+    {
+      "symbol": "EQUITASBNK.NS",
+      "rows": 1475,
+      "first_date": "2020-11-02",
+      "last_date": "2026-10-19",
+      "years_history": 5.96,
+      "status": "UNDER_MIN_HISTORY",
+      "raw_file": "data\\raw\\2026-10-20\\EQUITASBNK.csv"
+    },
+    {
+      "symbol": "CYIENT.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\CYIENT.csv"
+    },
+    {
+      "symbol": "BSOFT.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\BSOFT.csv"
+    },
+    {
+      "symbol": "GLENMARK.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\GLENMARK.csv"
+    },
+    {
+      "symbol": "LAURUSLABS.NS",
+      "rows": 2431,
+      "first_date": "2016-12-19",
+      "last_date": "2026-10-19",
+      "years_history": 9.83,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\LAURUSLABS.csv"
+    },
+    {
+      "symbol": "EMAMILTD.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\EMAMILTD.csv"
+    },
+    {
+      "symbol": "JYOTHYLAB.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\JYOTHYLAB.csv"
+    },
+    {
+      "symbol": "EXIDEIND.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\EXIDEIND.csv"
+    },
+    {
+      "symbol": "APOLLOTYRE.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\APOLLOTYRE.csv"
+    },
+    {
+      "symbol": "CESC.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\CESC.csv"
+    },
+    {
+      "symbol": "NHPC.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\NHPC.csv"
+    },
+    {
+      "symbol": "NATIONALUM.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\NATIONALUM.csv"
+    },
+    {
+      "symbol": "HINDZINC.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\HINDZINC.csv"
+    },
+    {
+      "symbol": "THERMAX.NS",
+      "rows": 2666,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\THERMAX.csv"
+    },
+    {
+      "symbol": "KEC.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\KEC.csv"
+    },
+    {
+      "symbol": "CROMPTON.NS",
+      "rows": 2579,
+      "first_date": "2016-05-13",
+      "last_date": "2026-10-19",
+      "years_history": 10.43,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\CROMPTON.csv"
+    },
+    {
+      "symbol": "BATAINDIA.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\BATAINDIA.csv"
+    },
+    {
+      "symbol": "DEEPAKNTR.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\DEEPAKNTR.csv"
+    },
+    {
+      "symbol": "TATACHEM.NS",
+      "rows": 2667,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\TATACHEM.csv"
+    },
+    {
+      "symbol": "^NSEI",
+      "rows": 2660,
+      "first_date": "2016-01-04",
+      "last_date": "2026-10-19",
+      "years_history": 10.79,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\IDX_NSEI.csv"
+    },
+    {
+      "symbol": "^CRSLDX",
+      "rows": 2657,
+      "first_date": "2016-01-01",
+      "last_date": "2026-10-19",
+      "years_history": 10.8,
+      "status": "OK",
+      "raw_file": "data\\raw\\2026-10-20\\IDX_CRSLDX.csv"
+    },
+    {
+      "symbol": "^CNXSC",
+      "rows": 1,
+      "first_date": "2026-10-19",
+      "last_date": "2026-10-19",
+      "years_history": 0.0,
+      "status": "UNDER_MIN_HISTORY",
+      "raw_file": "data\\raw\\2026-10-20\\IDX_CNXSC.csv"
+    }
+  ],
+  "flagged_issues": [
+    {
+      "ticker": "TATAMOTORS.NS",
+      "name": "Tata Motors",
+      "sector": "Auto",
+      "cap_class": "large",
+      "status": "FAILED_DOWNLOAD",
+      "rows": 0,
+      "years": 0.0,
+      "reason": "Delisted / not found on Yahoo Finance due to corporate action/demerger",
+      "proposed_replacement": "HEROMOTOCO.NS",
+      "proposed_name": "Hero MotoCorp Limited"
+    },
+    {
+      "ticker": "EQUITASBNK.NS",
+      "name": "Equitas Small Finance Bank",
+      "sector": "Banking and Financials",
+      "cap_class": "small",
+      "status": "UNDER_MIN_HISTORY",
+      "rows": 1475,
+      "years": 5.96,
+      "reason": "Under 8 years of listing history (IPO in late 2020; ~6.0 years available)",
+      "proposed_replacement": "KARURVYSYA.NS",
+      "proposed_name": "The Karur Vysya Bank Limited"
+    }
+  ]
+}

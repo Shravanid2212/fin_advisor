@@ -1,0 +1,88 @@
+# Financial Market Analytics & Investment Decision Support System Configuration
+# Source of Truth: docs/PRD.md and AGENTS.md
+
+# 1. Historical Date Range
+date_range:
+  start: "2016-01-01"
+  end: "latest"
+
+# 2. Market Conventions & Financial Parameters
+risk_free_rate: 0.065  # 10-year G-Sec yield (6.5%)
+trading_days: 252      # Trading days per year for annualisation
+random_seed: 42        # Seed for reproducible simulations/optimisation
+
+# 3. Data Cleaning & Validation Thresholds
+extreme_z_threshold: 4.0        # Flag (|z| > 4) for genuine extreme returns
+spike_review_threshold: 0.20    # Flag daily moves > 20% for corporate actions
+min_history_years: 3            # Minimum listing history required for recommendation eligibility
+min_liquidity_traded_value: 10000000.0  # 60-day average daily traded value threshold (INR 1 Crore)
+
+# 4. Portfolio Concentration Limits
+concentration_limits:
+  stock: 0.25   # Maximum 25% allocation to any single stock
+  sector: 0.40  # Maximum 40% allocation to any single sector
+
+# 5. Recommendation Engine Weights (Sum must equal 1.00)
+recommender_weights:
+  sharpe: 0.35
+  drawdown: 0.20
+  diversification: 0.25
+  sector_gap: 0.10
+  dividend_or_momentum: 0.10
+
+# 6. Target Allocation Table by Risk Profile Level (PRD Section 11)
+target_allocations:
+  1:
+    label: "Conservative"
+    equity: 0.20
+    debt: 0.70
+    gold: 0.10
+    equity_split:
+      large: 1.00
+      mid: 0.00
+      small: 0.00
+  2:
+    label: "Moderately Conservative"
+    equity: 0.35
+    debt: 0.55
+    gold: 0.10
+    equity_split:
+      large: 0.90
+      mid: 0.10
+      small: 0.00
+  3:
+    label: "Moderate"
+    equity: 0.50
+    debt: 0.40
+    gold: 0.10
+    equity_split:
+      large: 0.70
+      mid: 0.25
+      small: 0.05
+  4:
+    label: "Moderately Aggressive"
+    equity: 0.70
+    debt: 0.25
+    gold: 0.05
+    equity_split:
+      large: 0.55
+      mid: 0.30
+      small: 0.15
+  5:
+    label: "Aggressive"
+    equity: 0.85
+    debt: 0.10
+    gold: 0.05
+    equity_split:
+      large: 0.40
+      mid: 0.35
+      small: 0.25
+
+# 7. Benchmark Indices
+# (^CRSLDX removed as midcap benchmark per Phase 1b audit; synthetic baskets defined for mid and small caps)
+benchmarks:
+  broad_market: "^NSEI"
+  midcap: "synthetic_midcap"
+  smallcap: "synthetic_smallcap"
+  synthetic_min_constituents_mid: 20    # at least 20 of 25 midcap stocks present (80%)
+  synthetic_min_constituents_small: 15  # at least 15 of 20 smallcap stocks present (75%)

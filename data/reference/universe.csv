@@ -1,0 +1,81 @@
+ticker,name,sector,cap_class,cap_source_date
+HDFCBANK.NS,HDFC Bank,Banking and Financials,large,2026-06-30
+ICICIBANK.NS,ICICI Bank,Banking and Financials,large,2026-06-30
+SBIN.NS,State Bank of India,Banking and Financials,large,2026-06-30
+KOTAKBANK.NS,Kotak Mahindra Bank,Banking and Financials,large,2026-06-30
+AXISBANK.NS,Axis Bank,Banking and Financials,large,2026-06-30
+BAJFINANCE.NS,Bajaj Finance,Banking and Financials,large,2026-06-30
+TCS.NS,Tata Consultancy Services,IT,large,2026-06-30
+INFY.NS,Infosys,IT,large,2026-06-30
+HCLTECH.NS,HCL Technologies,IT,large,2026-06-30
+WIPRO.NS,Wipro,IT,large,2026-06-30
+SUNPHARMA.NS,Sun Pharmaceutical Industries,Pharma and Healthcare,large,2026-06-30
+DRREDDY.NS,Dr. Reddy's Laboratories,Pharma and Healthcare,mid,2026-06-30
+CIPLA.NS,Cipla,Pharma and Healthcare,large,2026-06-30
+HINDUNILVR.NS,Hindustan Unilever,FMCG,large,2026-06-30
+ITC.NS,ITC Limited,FMCG,large,2026-06-30
+NESTLEIND.NS,Nestle India,FMCG,large,2026-06-30
+BRITANNIA.NS,Britannia Industries,FMCG,large,2026-06-30
+MARUTI.NS,Maruti Suzuki,Auto,large,2026-06-30
+HEROMOTOCO.NS,Hero MotoCorp,Auto,mid,2026-06-30
+M&M.NS,Mahindra & Mahindra,Auto,large,2026-06-30
+BAJAJ-AUTO.NS,Bajaj Auto,Auto,large,2026-06-30
+RELIANCE.NS,Reliance Industries,Energy and Power,large,2026-06-30
+NTPC.NS,NTPC Limited,Energy and Power,large,2026-06-30
+POWERGRID.NS,Power Grid Corporation,Energy and Power,large,2026-06-30
+TATASTEEL.NS,Tata Steel,Metals,large,2026-06-30
+JSWSTEEL.NS,JSW Steel,Metals,large,2026-06-30
+HINDALCO.NS,Hindalco Industries,Metals,large,2026-06-30
+LT.NS,Larsen & Toubro,Capital Goods and Infra,large,2026-06-30
+TITAN.NS,Titan Company,Consumer,large,2026-06-30
+ASIANPAINT.NS,Asian Paints,Consumer,large,2026-06-30
+CHOLAFIN.NS,Cholamandalam Investment,Banking and Financials,large,2026-06-30
+FEDERALBNK.NS,Federal Bank,Banking and Financials,mid,2026-06-30
+IDFCFIRSTB.NS,IDFC First Bank,Banking and Financials,mid,2026-06-30
+PERSISTENT.NS,Persistent Systems,IT,mid,2026-06-30
+COFORGE.NS,Coforge,IT,mid,2026-06-30
+MPHASIS.NS,Mphasis,IT,mid,2026-06-30
+LUPIN.NS,Lupin,Pharma and Healthcare,mid,2026-06-30
+AUROPHARMA.NS,Aurobindo Pharma,Pharma and Healthcare,mid,2026-06-30
+ALKEM.NS,Alkem Laboratories,Pharma and Healthcare,mid,2026-06-30
+MARICO.NS,Marico,FMCG,mid,2026-06-30
+DABUR.NS,Dabur India,FMCG,mid,2026-06-30
+GODREJCP.NS,Godrej Consumer Products,FMCG,large,2026-06-30
+TVSMOTOR.NS,TVS Motor Company,Auto,large,2026-06-30
+BHARATFORG.NS,Bharat Forge,Auto,mid,2026-06-30
+ASHOKLEY.NS,Ashok Leyland,Auto,mid,2026-06-30
+TATAPOWER.NS,Tata Power,Energy and Power,large,2026-06-30
+BPCL.NS,Bharat Petroleum,Energy and Power,large,2026-06-30
+JINDALSTEL.NS,Jindal Steel & Power,Metals,large,2026-06-30
+SAIL.NS,Steel Authority of India,Metals,mid,2026-06-30
+BEL.NS,Bharat Electronics,Capital Goods and Infra,large,2026-06-30
+CUMMINSIND.NS,Cummins India,Capital Goods and Infra,large,2026-06-30
+HAVELLS.NS,Havells India,Consumer,mid,2026-06-30
+VOLTAS.NS,Voltas,Consumer,mid,2026-06-30
+PIDILITIND.NS,Pidilite Industries,Chemicals,large,2026-06-30
+SRF.NS,SRF Limited,Chemicals,mid,2026-06-30
+MANAPPURAM.NS,Manappuram Finance,Banking and Financials,small,2026-06-30
+SOUTHBANK.NS,South Indian Bank,Banking and Financials,small,2026-06-30
+CYIENT.NS,Cyient,IT,small,2026-06-30
+BSOFT.NS,Birlasoft,IT,small,2026-06-30
+GLENMARK.NS,Glenmark Pharmaceuticals,Pharma and Healthcare,mid,2026-06-30
+LAURUSLABS.NS,Laurus Labs,Pharma and Healthcare,mid,2026-06-30
+EMAMILTD.NS,Emami,FMCG,small,2026-06-30
+JYOTHYLAB.NS,Jyothy Labs,FMCG,small,2026-06-30
+EXIDEIND.NS,Exide Industries,Auto,small,2026-06-30
+APOLLOTYRE.NS,Apollo Tyres,Auto,small,2026-06-30
+CESC.NS,CESC Limited,Energy and Power,small,2026-06-30
+NHPC.NS,NHPC Limited,Energy and Power,mid,2026-06-30
+NATIONALUM.NS,National Aluminium,Metals,mid,2026-06-30
+HINDZINC.NS,Hindustan Zinc,Metals,large,2026-06-30
+THERMAX.NS,Thermax,Capital Goods and Infra,mid,2026-06-30
+KEC.NS,KEC International,Capital Goods and Infra,small,2026-06-30
+CROMPTON.NS,Crompton Greaves Cons. Electricals,Consumer,small,2026-06-30
+BATAINDIA.NS,Bata India,Consumer,small,2026-06-30
+DEEPAKNTR.NS,Deepak Nitrite,Chemicals,small,2026-06-30
+TATACHEM.NS,Tata Chemicals,Chemicals,small,2026-06-30
+JINDALSAW.NS,Jindal Saw Ltd.,Metals,small,2026-06-30
+GRANULES.NS,Granules India Ltd.,Pharma and Healthcare,small,2026-06-30
+NATCOPHARM.NS,Natco Pharma Ltd.,Pharma and Healthcare,small,2026-06-30
+WELSPUNLIV.NS,WELSPUN LIVING LIMITED,Consumer,small,2026-06-30
+GRAPHITE.NS,Graphite India Ltd.,Capital Goods and Infra,small,2026-06-30
