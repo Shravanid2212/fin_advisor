@@ -172,14 +172,19 @@ def test_load_incremental_idempotent_no_duplicates(tmp_path: Path):
     con.close()
     assert count_before == 1
 
-    # First incremental run
-    res1 = load_incremental(db_path=db_file)
+    # First incremental run with offline injected data
+    injected_raw = {
+        "HDFCBANK.NS": pd.DataFrame([
+            {"Date": "2026-10-16", "Open": 1700.0, "High": 1720.0, "Low": 1690.0, "Close": 1710.0, "Volume": 1000000.0}
+        ])
+    }
+    res1 = load_incremental(db_path=db_file, injected_raw_dfs=injected_raw)
     con = duckdb.connect(str(db_file), read_only=True)
     count_after1 = con.execute("SELECT COUNT(*) FROM prices").fetchone()[0]
     con.close()
 
     # Second incremental run with same data
-    res2 = load_incremental(db_path=db_file)
+    res2 = load_incremental(db_path=db_file, injected_raw_dfs=injected_raw)
     con = duckdb.connect(str(db_file), read_only=True)
     count_after2 = con.execute("SELECT COUNT(*) FROM prices").fetchone()[0]
     con.close()
@@ -226,7 +231,7 @@ def test_simulated_failure_leaves_db_unchanged(tmp_path: Path):
 
     # Trigger simulated failure
     with pytest.raises(RuntimeError, match="Simulated transaction failure"):
-        load_incremental(db_path=db_file, simulate_failure=True)
+        load_incremental(db_path=db_file, simulate_failure=True, injected_raw_dfs={})
 
     # Verify counts remain 100% unchanged
     con = duckdb.connect(str(db_file), read_only=True)
