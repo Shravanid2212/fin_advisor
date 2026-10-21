@@ -1,0 +1,208 @@
+# 14 Risk Profile Questions per PRD Section 11
+# Section A: Risk Capacity (Q1-Q6)
+# Section B: Risk Tolerance (Q7-Q10)
+# Section C: Preferences (Q11-Q14, filters only, score weight 0)
+
+questions:
+  # Section A: Risk Capacity (score each 1 to 4)
+  - id: "q1"
+    number: 1
+    category: "capacity"
+    weight: 1
+    prompt: "Age"
+    options:
+      - text: "under 25"
+        score: 4
+      - text: "25-35"
+        score: 3
+      - text: "36-50"
+        score: 2
+      - text: "51+"
+        score: 1
+
+  - id: "q2"
+    number: 2
+    category: "capacity"
+    weight: 1
+    prompt: "Income stability"
+    options:
+      - text: "fixed salary"
+        score: 4
+      - text: "variable"
+        score: 3
+      - text: "business"
+        score: 2
+      - text: "retired"
+        score: 1
+
+  - id: "q3"
+    number: 3
+    category: "capacity"
+    weight: 1
+    prompt: "Dependents"
+    options:
+      - text: "none"
+        score: 4
+      - text: "1"
+        score: 3
+      - text: "2-3"
+        score: 2
+      - text: "4+"
+        score: 1
+
+  - id: "q4"
+    number: 4
+    category: "capacity"
+    weight: 1
+    prompt: "Emergency fund"
+    options:
+      - text: "under 3 months"
+        score: 1
+      - text: "3-6"
+        score: 2
+      - text: "6-12"
+        score: 3
+      - text: "12+"
+        score: 4
+
+  - id: "q5"
+    number: 5
+    category: "capacity"
+    weight: 1
+    prompt: "Income spent on EMIs"
+    options:
+      - text: "over 50%"
+        score: 1
+      - text: "30-50%"
+        score: 2
+      - text: "10-30%"
+        score: 3
+      - text: "under 10%"
+        score: 4
+
+  - id: "q6"
+    number: 6
+    category: "capacity"
+    weight: 2
+    prompt: "Investment horizon"
+    options:
+      - text: "under 1 yr"
+        score: 1
+      - text: "1-3"
+        score: 2
+      - text: "3-7"
+        score: 3
+      - text: "7+ yrs"
+        score: 4
+
+  # Section B: Risk Tolerance (score each 1 to 4)
+  - id: "q7"
+    number: 7
+    category: "tolerance"
+    weight: 1
+    prompt: "Your portfolio falls 20% in 3 months"
+    options:
+      - text: "sell all"
+        score: 1
+      - text: "sell some"
+        score: 2
+      - text: "hold"
+        score: 3
+      - text: "buy more"
+        score: 4
+
+  - id: "q8"
+    number: 8
+    category: "tolerance"
+    weight: 1
+    prompt: "Acceptable one-year outcome range"
+    options:
+      - text: "+5/-3"
+        score: 1
+      - text: "+10/-8"
+        score: 2
+      - text: "+18/-15"
+        score: 3
+      - text: "+30/-25"
+        score: 4
+
+  - id: "q9"
+    number: 9
+    category: "tolerance"
+    weight: 1
+    prompt: "Equity experience"
+    options:
+      - text: "none"
+        score: 1
+      - text: "under 2 yrs"
+        score: 2
+      - text: "2-5"
+        score: 3
+      - text: "5+"
+        score: 4
+
+  - id: "q10"
+    number: 10
+    category: "tolerance"
+    weight: 1
+    prompt: "Which matters more"
+    options:
+      - text: "protecting capital"
+        score: 1
+      - text: "steady income"
+        score: 2
+      - text: "balanced"
+        score: 3
+      - text: "maximum growth"
+        score: 4
+
+  # Section C: Preferences (filters, not scored)
+  - id: "q11"
+    number: 11
+    category: "preference"
+    weight: 0
+    prompt: "Goal"
+    options:
+      - text: "retirement"
+      - text: "education"
+      - text: "house"
+      - text: "wealth growth"
+      - text: "short-term"
+
+  - id: "q12"
+    number: 12
+    category: "preference"
+    weight: 0
+    prompt: "Cap preference"
+    options:
+      - text: "large only"
+      - text: "large + mid"
+      - text: "include small"
+
+  - id: "q13"
+    number: 13
+    category: "preference"
+    weight: 0
+    prompt: "Sectors to favour or avoid"
+    multi_select: true
+    options:
+      - text: "Banking and Financials"
+      - text: "IT"
+      - text: "Pharma and Healthcare"
+      - text: "FMCG"
+      - text: "Auto"
+      - text: "Energy and Power"
+      - text: "Metals"
+      - text: "Capital Goods and Infra"
+      - text: "Consumer"
+      - text: "Chemicals"
+
+  - id: "q14"
+    number: 14
+    category: "preference"
+    weight: 0
+    prompt: "Dividend preference"
+    options:
+      - text: "yes"
+      - text: "no"
+      - text: "no preference"
