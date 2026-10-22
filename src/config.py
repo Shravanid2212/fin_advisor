@@ -56,6 +56,13 @@ class RecommenderWeightsConfig:
 
 
 @dataclass(frozen=True)
+class FundRecommenderWeightsConfig:
+    sharpe: float = 0.40
+    drawdown: float = 0.30
+    consistency: float = 0.30
+
+
+@dataclass(frozen=True)
 class EquitySplitConfig:
     large: float
     mid: float
@@ -91,6 +98,18 @@ class UniverseStock:
 
 
 @dataclass(frozen=True)
+class RecommenderConfig:
+    max_recommendations: int = 8
+    max_per_sector: int = 2
+    per_stock_weight_cap: float = 0.20
+    diversification_test_weight: float = 0.05
+    favoured_sector_bonus: float = 0.5
+    profile_max_risk_bucket: dict[int, int] = field(
+        default_factory=lambda: {1: 2, 2: 2, 3: 3, 4: 4, 5: 5}
+    )
+
+
+@dataclass(frozen=True)
 class AppConfig:
     date_range: DateRangeConfig
     risk_free_rate: float
@@ -103,6 +122,8 @@ class AppConfig:
     concentration_limits: ConcentrationLimitsConfig
     recommender_weights: RecommenderWeightsConfig
     target_allocations: dict[int, TargetAllocationLevel]
+    recommender: RecommenderConfig = field(default_factory=RecommenderConfig)
+    fund_recommender_weights: FundRecommenderWeightsConfig = field(default_factory=FundRecommenderWeightsConfig)
     benchmarks: BenchmarksConfig = field(default_factory=BenchmarksConfig)
     universe: list[UniverseStock] = field(default_factory=list)
 
@@ -159,6 +180,15 @@ def _validate_recommender_weights(raw: Any) -> RecommenderWeightsConfig:
         raise ConfigValidationError(f"Recommender weights must sum to 1.0, got {total}")
 
     return RecommenderWeightsConfig(**values)
+
+
+def _validate_fund_recommender_weights(raw: Any) -> FundRecommenderWeightsConfig:
+    if not isinstance(raw, dict):
+        return FundRecommenderWeightsConfig()
+    sharpe = float(raw.get("sharpe", 0.40))
+    dd = float(raw.get("drawdown", 0.30))
+    cons = float(raw.get("consistency", 0.30))
+    return FundRecommenderWeightsConfig(sharpe=sharpe, drawdown=dd, consistency=cons)
 
 
 def _validate_target_allocations(raw: Any) -> dict[int, TargetAllocationLevel]:
@@ -221,6 +251,32 @@ def _validate_benchmarks(raw: Any) -> BenchmarksConfig:
         smallcap=str(raw.get("smallcap", "synthetic_smallcap")),
         synthetic_min_constituents_mid=int(raw.get("synthetic_min_constituents_mid", 20)),
         synthetic_min_constituents_small=int(raw.get("synthetic_min_constituents_small", 15)),
+    )
+
+
+def _validate_recommender(raw: Any) -> RecommenderConfig:
+    if not isinstance(raw, dict):
+        return RecommenderConfig()
+    max_recs = int(raw.get("max_recommendations", 8))
+    max_per_sector = int(raw.get("max_per_sector", 2))
+    per_stock_cap = float(raw.get("per_stock_weight_cap", 0.20))
+    test_w = float(raw.get("diversification_test_weight", 0.05))
+    fav_bonus = float(raw.get("favoured_sector_bonus", 0.5))
+    bucket_map_raw = raw.get("profile_max_risk_bucket", {})
+    bucket_map = {1: 2, 2: 2, 3: 3, 4: 4, 5: 5}
+    if isinstance(bucket_map_raw, dict):
+        for k, v in bucket_map_raw.items():
+            try:
+                bucket_map[int(k)] = int(v)
+            except (ValueError, TypeError):
+                pass
+    return RecommenderConfig(
+        max_recommendations=max_recs,
+        max_per_sector=max_per_sector,
+        per_stock_weight_cap=per_stock_cap,
+        diversification_test_weight=test_w,
+        favoured_sector_bonus=fav_bonus,
+        profile_max_risk_bucket=bucket_map,
     )
 
 
@@ -416,6 +472,8 @@ def load_config(
     concentration_limits = _validate_concentration_limits(data["concentration_limits"])
     recommender_weights = _validate_recommender_weights(data["recommender_weights"])
     target_allocations = _validate_target_allocations(data["target_allocations"])
+    recommender = _validate_recommender(data.get("recommender", {}))
+    fund_recommender_weights = _validate_fund_recommender_weights(data.get("fund_recommender_weights", {}))
     benchmarks = _validate_benchmarks(data.get("benchmarks", {}))
 
     universe: list[UniverseStock] = []
@@ -437,6 +495,8 @@ def load_config(
         concentration_limits=concentration_limits,
         recommender_weights=recommender_weights,
         target_allocations=target_allocations,
+        recommender=recommender,
+        fund_recommender_weights=fund_recommender_weights,
         benchmarks=benchmarks,
         universe=universe,
     )

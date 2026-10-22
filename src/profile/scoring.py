@@ -96,8 +96,8 @@ def load_questions(yaml_path: str | Path | None = None) -> list[Question]:
         )
         questions.append(q)
 
-    if len(questions) != 14:
-        raise ValueError(f"Expected exactly 14 questions, found {len(questions)}")
+    if len(questions) not in (14, 15):
+        raise ValueError(f"Expected 14 or 15 questions, found {len(questions)}")
 
     return questions
 
@@ -253,12 +253,59 @@ def calculate_profile(
     tolerance_score = round(((raw_tolerance - min_tolerance) / (max_tolerance - min_tolerance)) * 100.0, 4)
     tolerance_level = map_score_to_level(tolerance_score)
 
-    # 3. Preferences (Q11-Q14)
+    # 3. Preferences (Q11-Q15)
     for q in questions:
         if q.category == "preference":
             ans = normalized_answers.get(q.id)
             if ans is not None:
                 preferences[q.id] = ans
+
+    # Resolve favoured_sectors and avoided_sectors with legacy migration
+    favoured_raw = normalized_answers.get("favoured_sectors")
+    avoided_raw = normalized_answers.get("avoided_sectors")
+
+    # Detect old 14-question format: q14 was dividend preference string ('yes', 'no', 'no preference')
+    # and q13 was single sector list.
+    old_q14 = normalized_answers.get("q14")
+    is_legacy_14 = isinstance(old_q14, str) and old_q14.strip().lower() in ("yes", "no", "no preference")
+
+    if is_legacy_14:
+        # Migrate: old q13 is treated as avoided_sectors only
+        legacy_sectors = normalized_answers.get("q13")
+        if isinstance(legacy_sectors, list):
+            avoided_sectors = [str(s) for s in legacy_sectors]
+        else:
+            avoided_sectors = []
+        favoured_sectors = []
+        preferences["dividend_preference"] = old_q14
+        preferences["q15"] = old_q14
+    else:
+        # New 15-question format: q13 is favoured, q14 is avoided, q15 is dividend
+        if favoured_raw is not None:
+            favoured_sectors = list(favoured_raw) if isinstance(favoured_raw, (list, set, tuple)) else [str(favoured_raw)]
+        elif isinstance(normalized_answers.get("q13"), (list, set, tuple)):
+            favoured_sectors = list(normalized_answers["q13"])
+        else:
+            favoured_sectors = []
+
+        if avoided_raw is not None:
+            avoided_sectors = list(avoided_raw) if isinstance(avoided_raw, (list, set, tuple)) else [str(avoided_raw)]
+        elif isinstance(normalized_answers.get("q14"), (list, set, tuple)):
+            avoided_sectors = list(normalized_answers["q14"])
+        else:
+            avoided_sectors = []
+
+    # Mutual exclusivity check: a sector cannot be in both favoured and avoided
+    overlap = set(favoured_sectors).intersection(set(avoided_sectors))
+    if overlap:
+        raise ValueError(
+            f"A sector cannot be both favoured and avoided: {', '.join(sorted(overlap))}"
+        )
+
+    preferences["favoured_sectors"] = favoured_sectors
+    preferences["avoided_sectors"] = avoided_sectors
+    preferences["q13"] = favoured_sectors
+    preferences["q14"] = avoided_sectors
 
     # 4. Preliminary Level (lower of the two)
     preliminary_level = min(capacity_level, tolerance_level)
@@ -304,4 +351,100 @@ def calculate_profile(
         target_allocation=target_allocation,
         raw_scores=raw_scores,
         preferences=preferences,
+    )
+
+
+def rebuild_profile_result(saved_dict: dict[str, Any] | None, config: AppConfig | None = None) -> ProfileResult | None:
+    """Rebuild a complete ProfileResult from a saved dictionary.
+
+    Tolerant of older saved profiles missing fields (such as 'preliminary_level',
+    'preferences', or 'raw_scores') and recomputes from saved answers when available.
+    """
+    if not saved_dict or not isinstance(saved_dict, dict):
+        return None
+
+    if config is None:
+        config = load_config()
+
+    # 1. If saved_dict has answers, recompute from the answers first
+    answers = saved_dict.get("answers")
+    if isinstance(answers, dict) and answers:
+        try:
+            res = calculate_profile(answers, config=config)
+            # Preserve any extra preferences stored in saved_dict
+            saved_prefs = dict(saved_dict.get("preferences", {}))
+            if saved_prefs:
+                merged_prefs = dict(res.preferences)
+                merged_prefs.update(saved_prefs)
+                res = ProfileResult(
+                    capacity_score=res.capacity_score,
+                    tolerance_score=res.tolerance_score,
+                    capacity_level=res.capacity_level,
+                    tolerance_level=res.tolerance_level,
+                    preliminary_level=res.preliminary_level,
+                    final_level=res.final_level,
+                    label=res.label,
+                    limiting_factor=res.limiting_factor,
+                    guardrail_messages=res.guardrail_messages,
+                    target_allocation=res.target_allocation,
+                    raw_scores=res.raw_scores,
+                    preferences=merged_prefs,
+                )
+            return res
+        except Exception:
+            pass  # Fall back to reconstructing directly from dictionary values
+
+    # 2. Direct reconstruction with safe fallbacks for missing fields
+    cap_score = float(saved_dict.get("capacity_score", 50.0))
+    cap_level = int(saved_dict.get("capacity_level", 3))
+    tol_score = float(saved_dict.get("tolerance_score", 50.0))
+    tol_level = int(saved_dict.get("tolerance_level", 3))
+
+    prem_level = saved_dict.get("preliminary_level")
+    if prem_level is None:
+        preliminary_level = min(cap_level, tol_level)
+    else:
+        preliminary_level = int(prem_level)
+
+    final_level = int(saved_dict.get("final_level", preliminary_level))
+    final_level = max(1, min(5, final_level))
+
+    lim_factor = saved_dict.get("limiting_factor")
+    if not lim_factor:
+        if cap_level < tol_level:
+            lim_factor = "capacity"
+        elif tol_level < cap_level:
+            lim_factor = "tolerance"
+        else:
+            lim_factor = "both"
+
+    guardrails = list(saved_dict.get("guardrail_messages", []))
+    target_alloc = config.target_allocations.get(final_level, config.target_allocations[3])
+    label = str(saved_dict.get("label", target_alloc.label))
+    raw_scores = dict(saved_dict.get("raw_scores", {}))
+
+    # Preferences migration and normalization
+    prefs = dict(saved_dict.get("preferences", {}))
+    fav = list(prefs.get("favoured_sectors", []))
+    avoid = list(prefs.get("avoided_sectors", []))
+    if "sectors" in prefs:
+        old_sec = prefs.pop("sectors")
+        if isinstance(old_sec, list) and not avoid:
+            avoid = list(old_sec)
+    prefs["favoured_sectors"] = fav
+    prefs["avoided_sectors"] = avoid
+
+    return ProfileResult(
+        capacity_score=cap_score,
+        tolerance_score=tol_score,
+        capacity_level=cap_level,
+        tolerance_level=tol_level,
+        preliminary_level=preliminary_level,
+        final_level=final_level,
+        label=label,
+        limiting_factor=str(lim_factor),
+        guardrail_messages=guardrails,
+        target_allocation=target_alloc,
+        raw_scores=raw_scores,
+        preferences=prefs,
     )

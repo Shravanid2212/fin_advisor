@@ -30,6 +30,11 @@ recommender_weights:
   sector_gap: 0.10
   dividend_or_momentum: 0.10
 
+fund_recommender_weights:
+  sharpe: 0.40
+  drawdown: 0.30
+  consistency: 0.30
+
 # 6. Target Allocation Table by Risk Profile Level (PRD Section 11)
 target_allocations:
   1:
@@ -86,3 +91,16 @@ benchmarks:
   smallcap: "synthetic_smallcap"
   synthetic_min_constituents_mid: 20    # at least 20 of 25 midcap stocks present (80%)
   synthetic_min_constituents_small: 15  # at least 15 of 20 smallcap stocks present (75%)
+
+# 8. Recommender Engine Configuration (PRD Section 13)
+recommender:
+  max_recommendations: 8
+  max_per_sector: 2
+  per_stock_weight_cap: 0.20  # 20% maximum per-stock weight cap in suggested stock basket
+  favoured_sector_bonus: 0.5  # Bonus in std deviations on composite z-score for favoured sectors
+  profile_max_risk_bucket:
+    1: 2
+    2: 2
+    3: 3
+    4: 4
+    5: 5

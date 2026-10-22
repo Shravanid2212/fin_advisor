@@ -183,7 +183,7 @@ questions:
     number: 13
     category: "preference"
     weight: 0
-    prompt: "Sectors to favour or avoid"
+    prompt: "Sectors I'd like more of"
     multi_select: true
     options:
       - text: "Banking and Financials"
@@ -199,6 +199,24 @@ questions:
 
   - id: "q14"
     number: 14
+    category: "preference"
+    weight: 0
+    prompt: "Sectors I'd rather avoid"
+    multi_select: true
+    options:
+      - text: "Banking and Financials"
+      - text: "IT"
+      - text: "Pharma and Healthcare"
+      - text: "FMCG"
+      - text: "Auto"
+      - text: "Energy and Power"
+      - text: "Metals"
+      - text: "Capital Goods and Infra"
+      - text: "Consumer"
+      - text: "Chemicals"
+
+  - id: "q15"
+    number: 15
     category: "preference"
     weight: 0
     prompt: "Dividend preference"

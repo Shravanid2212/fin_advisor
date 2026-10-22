@@ -19,6 +19,7 @@ from src.profile.scoring import (
     calculate_profile,
     load_questions,
     map_score_to_level,
+    rebuild_profile_result,
 )
 
 
@@ -33,15 +34,15 @@ def questions():
 
 
 def test_load_questions_schema(questions):
-    """Verify all 14 questions are parsed with proper categories and weights."""
-    assert len(questions) == 14
+    """Verify all 15 questions are parsed with proper categories and weights."""
+    assert len(questions) == 15
     capacity_qs = [q for q in questions if q.category == "capacity"]
     tolerance_qs = [q for q in questions if q.category == "tolerance"]
     preference_qs = [q for q in questions if q.category == "preference"]
 
     assert len(capacity_qs) == 6
     assert len(tolerance_qs) == 4
-    assert len(preference_qs) == 4
+    assert len(preference_qs) == 5
 
     # Horizon question (Q6) must have weight 2
     q6 = next(q for q in capacity_qs if q.id == "q6")
@@ -275,3 +276,103 @@ def test_text_and_numeric_equivalence(config, questions):
     assert res_num.tolerance_score == res_text.tolerance_score
     assert res_num.final_level == res_text.final_level
     assert res_num.limiting_factor == res_text.limiting_factor
+
+
+def test_sector_cannot_be_in_both_lists(config, questions):
+    """Verify ValueError is raised if the same sector is present in both favoured and avoided."""
+    answers = {f"q{i}": 3 for i in range(1, 11)}
+    answers["favoured_sectors"] = ["IT", "Banking and Financials"]
+    answers["avoided_sectors"] = ["Banking and Financials", "Auto"]
+
+    with pytest.raises(ValueError, match="A sector cannot be both favoured and avoided"):
+        calculate_profile(answers, config=config, questions=questions)
+
+
+def test_legacy_14_question_migration(config, questions):
+    """Verify legacy 14-question profile format migrates q13 to avoided_sectors and q14 to dividend."""
+    legacy_answers = {f"q{i}": 3 for i in range(1, 11)}
+    legacy_answers["q11"] = "wealth growth"
+    legacy_answers["q12"] = "large + mid"
+    legacy_answers["q13"] = ["Auto", "Metals"]  # Old single sector list
+    legacy_answers["q14"] = "yes"  # Old dividend preference
+
+    res = calculate_profile(legacy_answers, config=config, questions=questions)
+    assert res.preferences["avoided_sectors"] == ["Auto", "Metals"]
+    assert res.preferences["favoured_sectors"] == []
+    assert res.preferences["dividend_preference"] == "yes"
+
+
+def test_rebuild_profile_result_old_format_missing_fields(config):
+    """Verify rebuild_profile_result restores an old-format dict missing preliminary_level without crashing."""
+    old_dict = {
+        "final_level": 3,
+        "label": "Moderate",
+        "capacity_score": 55.0,
+        "capacity_level": 3,
+        "tolerance_score": 60.0,
+        "tolerance_level": 3,
+        "limiting_factor": "both",
+        "guardrail_messages": [],
+        # preliminary_level, preferences, raw_scores are deliberately omitted
+    }
+
+    res = rebuild_profile_result(old_dict, config=config)
+    assert res is not None
+    assert res.final_level == 3
+    assert res.preliminary_level == 3
+    assert res.label == "Moderate"
+    assert res.capacity_score == 55.0
+    assert "favoured_sectors" in res.preferences
+    assert "avoided_sectors" in res.preferences
+
+
+def test_rebuild_profile_result_new_format(config):
+    """Verify rebuild_profile_result reconstructs modern dict with all fields."""
+    modern_dict = {
+        "final_level": 4,
+        "label": "Growth",
+        "capacity_score": 75.0,
+        "capacity_level": 4,
+        "tolerance_score": 70.0,
+        "tolerance_level": 4,
+        "preliminary_level": 4,
+        "limiting_factor": "tolerance",
+        "guardrail_messages": [],
+        "preferences": {
+            "favoured_sectors": ["IT"],
+            "avoided_sectors": ["Metals"],
+            "dividend_preference": "no",
+        },
+        "raw_scores": {"q1": 4, "q2": 4},
+    }
+
+    res = rebuild_profile_result(modern_dict, config=config)
+    assert res is not None
+    assert res.final_level == 4
+    assert res.preliminary_level == 4
+    assert res.preferences["favoured_sectors"] == ["IT"]
+    assert res.preferences["avoided_sectors"] == ["Metals"]
+
+
+def test_rebuild_profile_result_from_saved_answers(config):
+    """Verify rebuild_profile_result accurately recomputes when saved answers are present."""
+    saved_dict = {
+        "answers": {
+            "q1": 1, "q2": 1, "q3": 1, "q4": 1, "q5": 1,
+            "q6": 1, "q7": 1, "q8": 1, "q9": 1, "q10": 1,
+            "q11": "capital preservation",
+            "q12": "large only",
+            "favoured_sectors": ["Pharma and Healthcare"],
+            "avoided_sectors": ["Auto"],
+            "dividend_preference": "yes",
+        }
+    }
+
+    res = rebuild_profile_result(saved_dict, config=config)
+    assert res is not None
+    assert res.final_level == 1
+    assert res.label == "Conservative"
+    assert res.preferences["favoured_sectors"] == ["Pharma and Healthcare"]
+    assert res.preferences["avoided_sectors"] == ["Auto"]
+
+
