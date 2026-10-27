@@ -21,6 +21,7 @@ import pandas as pd
 
 from app.theme import (
     ACCENT_BLUE,
+    CARD_BORDER_OVERLAY,
     NEGATIVE_RED,
     NEUTRAL_GREY,
     PRIMARY_TEAL,
@@ -38,6 +39,7 @@ from app.components.ui import (
     render_html,
     render_kpi_card,
     render_page_header,
+    render_projection_panel,
     render_risk_badge,
     require_login,
 )
@@ -45,6 +47,7 @@ from src.accounts.store import save_user_data
 from src.app_data import (
     check_db_health,
     get_all_universe_tickers,
+    get_portfolio_cluster_breakdown,
     get_portfolio_csv_template,
     get_sample_portfolio_holdings,
 )
@@ -386,6 +389,35 @@ if holdings_records:
     df_holdings_ui = pd.DataFrame(holdings_records)
     st.dataframe(df_holdings_ui, use_container_width=True, hide_index=True)
 
+# Behavior Groups Diversification (Feature 2)
+held_equity_tickers = [h.ticker for h in port_input.holdings]
+cluster_info = get_portfolio_cluster_breakdown(held_equity_tickers)
+if cluster_info:
+    render_html("<div style='margin-bottom: 20px;'></div>")
+    st.subheader("Stock Behaviour Groups")
+    n_groups = cluster_info["distinct_groups"]
+    k_groups = cluster_info["total_groups"]
+    st.markdown(f"Your holdings sit in **{n_groups} of {k_groups} behaviour groups**.")
+    if cluster_info.get("dominating_group"):
+        dom_group = cluster_info["dominating_group"]
+        dom_pct = int(round(cluster_info["dominating_share"] * 100))
+        st.info(f"ℹ️ **Concentration Note:** About {dom_pct}% of your equity holdings belong to the **{dom_group}** group. You may want to look at stocks with complementary behavior patterns.")
+
+    # Show group counts in cards
+    group_items = list(cluster_info["group_counts"].items())
+    if group_items:
+        cols = st.columns(min(len(group_items), 5))
+        for idx, (g_name, count) in enumerate(group_items):
+            with cols[idx % len(cols)]:
+                render_html(
+                    f"""
+                    <div style="padding: 10px 12px; background: var(--secondary-background-color); border-radius: 6px; text-align: center; border: 1px solid {CARD_BORDER_OVERLAY}; margin-bottom: 8px;">
+                        <div style="font-size: 0.82rem; color: var(--text-color); opacity: 0.85;">{g_name}</div>
+                        <div style="font-size: 1.05rem; font-weight: 700; margin-top: 4px;">{count} stock{'s' if count > 1 else ''}</div>
+                    </div>
+                    """
+                )
+
 render_html("<div style='margin-bottom: 28px;'></div>")
 
 # 10. Target vs. Current Asset Allocation & Drift
@@ -471,5 +503,14 @@ if hasattr(analytics, "correlation_matrix") and analytics.correlation_matrix is 
     )
     apply_theme_to_plotly(fig_port_corr)
     st.plotly_chart(fig_port_corr, use_container_width=True)
+
+# 12. Scenario Forecast Projection (Feature 4)
+render_projection_panel(
+    asset_weights=target_alloc,
+    default_amount=10000.0,
+    default_mode="Monthly SIP",
+    default_horizon=5,
+    key_prefix="portfolio_proj",
+)
 
 render_disclaimer()

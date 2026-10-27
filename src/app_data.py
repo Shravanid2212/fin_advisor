@@ -892,3 +892,202 @@ def get_methodology_data(db_path: str = "data/market.duckdb") -> dict[str, Any]:
         return {}
 
 
+# ---------------------------------------------------------------------------
+# ML, Clustering & Market Sensitivity Data Services (Phase 20)
+# ---------------------------------------------------------------------------
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_stock_risk_outlook(ticker: str, db_path: str = "data/market.duckdb") -> dict[str, Any] | None:
+    """Retrieve forward risk outlook for a stock if feature is enabled and table exists."""
+    cfg = load_config()
+    ml_cfg = getattr(cfg, "ml", None)
+    if not ml_cfg or not getattr(ml_cfg.risk_outlook, "enabled", False):
+        return None
+
+    try:
+        con = duckdb.connect(db_path, read_only=True)
+        tables = con.execute("SHOW TABLES").df()["name"].tolist()
+        if "risk_outlook" not in tables:
+            con.close()
+            return None
+
+        res = con.execute(
+            "SELECT ticker, as_of_date, current_bucket, predicted_bucket, outlook FROM risk_outlook WHERE ticker = ? AND asset_type = 'stock'",
+            [ticker],
+        ).df()
+        con.close()
+        if res.empty:
+            return None
+        return res.iloc[0].to_dict()
+    except Exception:
+        return None
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_fund_risk_outlook(scheme_code: str | int, db_path: str = "data/market.duckdb") -> dict[str, Any] | None:
+    """Retrieve forward risk outlook for a fund if feature is enabled and table exists."""
+    cfg = load_config()
+    ml_cfg = getattr(cfg, "ml", None)
+    if not ml_cfg or not getattr(ml_cfg.risk_outlook, "enabled", False):
+        return None
+
+    try:
+        con = duckdb.connect(db_path, read_only=True)
+        tables = con.execute("SHOW TABLES").df()["name"].tolist()
+        if "risk_outlook" not in tables:
+            con.close()
+            return None
+
+        res = con.execute(
+            "SELECT ticker, as_of_date, current_bucket, predicted_bucket, outlook FROM risk_outlook WHERE ticker = ? AND asset_type = 'fund'",
+            [str(int(scheme_code))],
+        ).df()
+        con.close()
+        if res.empty:
+            return None
+        return res.iloc[0].to_dict()
+    except Exception:
+        return None
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_stock_cluster_info(ticker: str, db_path: str = "data/market.duckdb") -> dict[str, Any] | None:
+    """Retrieve cluster behavior group and top 5 similar tickers for a stock."""
+    cfg = load_config()
+    ml_cfg = getattr(cfg, "ml", None)
+    if not ml_cfg or not getattr(ml_cfg.clusters, "enabled", False):
+        return None
+
+    try:
+        con = duckdb.connect(db_path, read_only=True)
+        tables = con.execute("SHOW TABLES").df()["name"].tolist()
+        if "stock_clusters" not in tables:
+            con.close()
+            return None
+
+        res = con.execute(
+            "SELECT ticker, cluster_id, cluster_name, nearest_5_similar_tickers FROM stock_clusters WHERE ticker = ?",
+            [ticker],
+        ).df()
+        if res.empty:
+            con.close()
+            return None
+
+        info = res.iloc[0].to_dict()
+        nearest_csv = str(info.get("nearest_5_similar_tickers", ""))
+        similar_tickers = [t.strip() for t in nearest_csv.split(",") if t.strip()]
+
+        # Fetch names and sectors for similar tickers
+        if similar_tickers:
+            placeholders = ",".join(["?"] * len(similar_tickers))
+            sim_df = con.execute(
+                f"SELECT ticker, name, sector, annual_volatility, beta FROM stock_features WHERE ticker IN ({placeholders})",
+                similar_tickers,
+            ).df()
+            info["similar_stocks"] = sim_df.to_dict(orient="records")
+        else:
+            info["similar_stocks"] = []
+
+        con.close()
+        return info
+    except Exception:
+        return None
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_portfolio_cluster_breakdown(tickers: list[str], db_path: str = "data/market.duckdb") -> dict[str, Any] | None:
+    """Analyze behavior group diversification across a portfolio's equity holdings."""
+    if not tickers:
+        return None
+
+    cfg = load_config()
+    ml_cfg = getattr(cfg, "ml", None)
+    if not ml_cfg or not getattr(ml_cfg.clusters, "enabled", False):
+        return None
+
+    try:
+        con = duckdb.connect(db_path, read_only=True)
+        tables = con.execute("SHOW TABLES").df()["name"].tolist()
+        if "stock_clusters" not in tables:
+            con.close()
+            return None
+
+        total_clusters_count = con.execute("SELECT COUNT(DISTINCT cluster_id) FROM stock_clusters").fetchone()[0]
+        placeholders = ",".join(["?"] * len(tickers))
+        res = con.execute(
+            f"SELECT ticker, cluster_id, cluster_name FROM stock_clusters WHERE ticker IN ({placeholders})",
+            tickers,
+        ).df()
+        con.close()
+
+        if res.empty:
+            return None
+
+        group_counts = res["cluster_name"].value_counts().to_dict()
+        distinct_count = len(group_counts)
+        total_holdings = len(res)
+
+        dominating_group = None
+        dominating_share = 0.0
+        for g_name, count in group_counts.items():
+            share = count / total_holdings
+            if share > 0.50 and total_holdings >= 3:
+                dominating_group = g_name
+                dominating_share = share
+                break
+
+        return {
+            "distinct_groups": distinct_count,
+            "total_groups": int(total_clusters_count),
+            "group_counts": group_counts,
+            "dominating_group": dominating_group,
+            "dominating_share": dominating_share,
+        }
+    except Exception:
+        return None
+
+
+@st.cache_data(ttl=3600, show_spinner=False)
+def get_market_sensitivity_info(
+    ticker_or_scheme: str,
+    asset_type: str = "stock",
+    db_path: str = "data/market.duckdb",
+) -> dict[str, Any] | None:
+    """Retrieve market sensitivity regression stats and plain-language labels."""
+    cfg = load_config()
+    ml_cfg = getattr(cfg, "ml", None)
+    if not ml_cfg or not getattr(ml_cfg.market_sensitivity, "enabled", False):
+        return None
+
+    try:
+        con = duckdb.connect(db_path, read_only=True)
+        tables = con.execute("SHOW TABLES").df()["name"].tolist()
+        if "market_sensitivity" not in tables:
+            con.close()
+            return None
+
+        res = con.execute(
+            "SELECT * FROM market_sensitivity WHERE ticker_or_scheme = ?",
+            [str(ticker_or_scheme)],
+        ).df()
+        con.close()
+        if res.empty:
+            return None
+
+        row = res.iloc[0].to_dict()
+        from src.regression.market_model import format_plain_language_sensitivity
+
+        plain_texts = format_plain_language_sensitivity(
+            beta=float(row["beta"]),
+            r_squared=float(row["r_squared"]),
+            alpha_annual=float(row["alpha_annual"]) if pd.notnull(row["alpha_annual"]) else None,
+            n_obs=int(row["n_obs"]),
+            se_alpha=float(row["se_alpha"]) if pd.notnull(row["se_alpha"]) else None,
+            is_fund=(asset_type == "fund"),
+        )
+        row["plain_language"] = plain_texts
+        return row
+    except Exception:
+        return None
+
+
+

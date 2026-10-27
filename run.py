@@ -14,13 +14,43 @@ import sys
 PYTHON_EXE = sys.executable
 
 
+def run_ml_pipeline() -> int:
+    """Execute machine learning, clustering, and regression modeling pipelines."""
+    commands = [
+        [PYTHON_EXE, "-m", "src.ml.risk_outlook"],
+        [PYTHON_EXE, "-m", "src.ml.clusters"],
+        [PYTHON_EXE, "-m", "src.regression.market_model"],
+    ]
+
+    print("\n" + "=" * 65)
+    print(">> EXECUTING ML, CLUSTERING & MARKET SENSITIVITY PIPELINES")
+    print("=" * 65)
+
+    for cmd in commands:
+        cmd_str = " ".join(cmd)
+        print(f"\n[+] Running: {cmd_str}")
+        res = subprocess.run(cmd)
+        if res.returncode != 0:
+            print(f"\n[!] Pipeline failed on step: {cmd_str}")
+            return res.returncode
+
+    print("\n" + "=" * 65)
+    print(">> ML & REGRESSION PIPELINE COMPLETED SUCCESSFULLY!")
+    print("Tables risk_outlook, stock_clusters, and market_sensitivity updated.")
+    print("=" * 65)
+    return 0
+
+
 def run_data_pipeline() -> int:
-    """Execute the end-to-end reproducible data and feature pipeline."""
+    """Execute the end-to-end reproducible data, feature, and ML pipeline."""
     commands = [
         [PYTHON_EXE, "-m", "src.clean.clean_market_data"],
         [PYTHON_EXE, "-m", "src.features.build_features"],
         [PYTHON_EXE, "-m", "src.stats.build_stats_tables"],
         [PYTHON_EXE, "-m", "src.funds.ingest"],
+        [PYTHON_EXE, "-m", "src.ml.risk_outlook"],
+        [PYTHON_EXE, "-m", "src.ml.clusters"],
+        [PYTHON_EXE, "-m", "src.regression.market_model"],
         [PYTHON_EXE, "-m", "src.ingest.dq_checks"],
     ]
 
@@ -73,7 +103,8 @@ Usage:
     python run.py <command>
 
 Available Commands:
-    data    Run data cleaning, feature engineering, and statistical tables
+    data    Run data cleaning, feature engineering, ML, and statistical tables
+    ml      Build risk_outlook, stock_clusters, and market_sensitivity models
     test    Execute pytest automated test suite
     app     Launch interactive Streamlit web application
     help    Display this help message
@@ -90,6 +121,8 @@ def main() -> None:
 
     if action == "data":
         sys.exit(run_data_pipeline())
+    elif action == "ml":
+        sys.exit(run_ml_pipeline())
     elif action == "test":
         sys.exit(run_tests())
     elif action == "app":

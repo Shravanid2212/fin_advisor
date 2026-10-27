@@ -298,6 +298,29 @@ def generate_fund_recommendations(
     w_dd = getattr(w_cfg, "drawdown", 0.30)
     w_cons = getattr(w_cfg, "consistency", 0.30)
 
+    # Optional market sensitivity alpha lookup
+    alpha_map: dict[str, float] = {}
+    ml_cfg = getattr(config, "ml", None)
+    ms_enabled = getattr(ml_cfg.market_sensitivity, "enabled", False) if ml_cfg else False
+    if ms_enabled:
+        try:
+            import duckdb
+            con_ms = duckdb.connect("data/market.duckdb", read_only=True)
+            tables = con_ms.execute("SHOW TABLES").df()["name"].tolist()
+            if "market_sensitivity" in tables:
+                df_ms = con_ms.execute(
+                    "SELECT ticker_or_scheme, alpha_annual, n_obs, se_alpha FROM market_sensitivity WHERE asset_type = 'fund'"
+                ).df()
+                for _, r_ms in df_ms.iterrows():
+                    a_ann = float(r_ms["alpha_annual"])
+                    n_o = int(r_ms["n_obs"])
+                    se_a = float(r_ms["se_alpha"])
+                    if n_o >= 250 and abs(a_ann) > (se_a * 0.5):
+                        alpha_map[str(r_ms["ticker_or_scheme"])] = a_ann
+            con_ms.close()
+        except Exception:
+            pass
+
     alloc_total = float(allocation_amount) if (allocation_amount is not None and allocation_amount > 0) else 0.0
 
     baskets: list[CategoryFundBasket] = []
@@ -364,6 +387,13 @@ def generate_fund_recommendations(
                 explanation = f"Gold allocation providing macro diversification with {cons_phrase} and contained drawdown ({mdd*100:.1f}%)."
             else:
                 explanation = f"Top-tier Sharpe ratio of {sh:.2f} in {lbl.lower()}, with {cagr_phrase} and {dd_phrase}."
+
+            # Optional alpha clause
+            sc_str = str(int(row["scheme_code"]))
+            if sc_str in alpha_map:
+                a_val = alpha_map[sc_str]
+                if a_val > 0.005:
+                    explanation += f" Beat what the market's risk would explain by about {a_val*100:.1f}% a year."
 
             rec_funds.append(
                 FundRecommendationItem(

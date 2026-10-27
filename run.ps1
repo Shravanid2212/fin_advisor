@@ -1,7 +1,7 @@
 # PowerShell runner script for Financial Market Analytics
 param (
     [Parameter(Position=0)]
-    [ValidateSet("data", "test", "app", "help")]
+    [ValidateSet("data", "ml", "test", "app", "help")]
     [string]$Command = "help"
 )
 
@@ -11,7 +11,17 @@ switch ($Command) {
         python -m src.clean.clean_market_data
         python -m src.features.build_features
         python -m src.stats.build_stats_tables
+        python -m src.funds.ingest
+        python -m src.ml.risk_outlook
+        python -m src.ml.clusters
+        python -m src.regression.market_model
         python -m src.ingest.dq_checks
+    }
+    "ml" {
+        Write-Host "Running Machine Learning Pipeline..." -ForegroundColor Cyan
+        python -m src.ml.risk_outlook
+        python -m src.ml.clusters
+        python -m src.regression.market_model
     }
     "test" {
         Write-Host "Running Pytest Test Suite..." -ForegroundColor Cyan

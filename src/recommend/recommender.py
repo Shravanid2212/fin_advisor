@@ -552,6 +552,7 @@ def build_explanation(
     eligible_df: pd.DataFrame,
     portfolio: PortfolioInput,
     favoured_sectors: list[str] | set[str] | None = None,
+    cluster_map: dict[str, str] | None = None,
 ) -> str:
     """Generate an explainable, fact-based rationale string for a recommendation.
 
@@ -560,6 +561,7 @@ def build_explanation(
     sharpe = float(item.get("sharpe_ratio", 0.0))
     sec = item.get("sector", "")
     corr = float(item.get("corr_with_port", 0.0))
+    ticker = item.get("ticker", "")
 
     # Sharpe percentile among eligible stocks
     all_sharpes = eligible_df["sharpe_ratio"].dropna().values
@@ -585,9 +587,21 @@ def build_explanation(
     fav_set = {str(s).strip().lower() for s in (favoured_sectors or [])}
     pref_clause = f" Matches your preference for {sec}." if str(sec).strip().lower() in fav_set else ""
 
+    cluster_clause = ""
+    if cluster_map and ticker in cluster_map:
+        c_name = cluster_map[ticker]
+        overlapping_holdings = [
+            h.ticker for h in portfolio.holdings
+            if h.is_analysed and cluster_map.get(h.ticker) == c_name and h.ticker != ticker
+        ]
+        if overlapping_holdings:
+            cluster_clause = f" Behaviour group: {c_name} (shared with {', '.join(overlapping_holdings[:2])} in your portfolio)."
+        else:
+            cluster_clause = f" Behaviour group: {c_name}."
+
     return (
         f"Why this stock: Sharpe {sharpe:.2f} ({sharpe_desc}), correlation with your portfolio {corr:.2f}, "
-        f"{sector_rationale}.{pref_clause}"
+        f"{sector_rationale}.{pref_clause}{cluster_clause}"
     )
 
 
@@ -1168,6 +1182,45 @@ def generate_recommendations(
         config=config,
     )
 
+    # 2b. ML Risk Outlook filter: Profile levels 1 and 2 only exclude stocks with 'Risk may be rising'
+    ml_cfg = getattr(config, "ml", None)
+    ro_enabled = getattr(ml_cfg.risk_outlook, "enabled", False) if ml_cfg else False
+    ml_skipped_notes: list[str] = []
+
+    if profile_level in (1, 2) and ro_enabled:
+        try:
+            con_ml = duckdb.connect(str(db_path), read_only=True)
+            tables = con_ml.execute("SHOW TABLES").df()["name"].tolist()
+            if "risk_outlook" in tables:
+                rising_tickers = set(
+                    con_ml.execute(
+                        "SELECT ticker FROM risk_outlook WHERE outlook = 'Risk may be rising'"
+                    ).df()["ticker"].tolist()
+                )
+                skipped_tickers = [t for t in eligible_df["ticker"] if t in rising_tickers]
+                if skipped_tickers:
+                    eligible_df = eligible_df[~eligible_df["ticker"].isin(rising_tickers)].copy().reset_index(drop=True)
+                    ml_skipped_notes.append(
+                        f"Skipped {len(skipped_tickers)} candidate(s) ({', '.join(skipped_tickers)}) flagged with forward 'Risk may be rising' for risk level {profile_level}."
+                    )
+            con_ml.close()
+        except Exception:
+            pass
+
+    # 2c. Load cluster map for explainability if clustering is enabled
+    cl_enabled = getattr(ml_cfg.clusters, "enabled", False) if ml_cfg else False
+    cluster_map: dict[str, str] = {}
+    if cl_enabled:
+        try:
+            con_cl = duckdb.connect(str(db_path), read_only=True)
+            tables = con_cl.execute("SHOW TABLES").df()["name"].tolist()
+            if "stock_clusters" in tables:
+                df_sc = con_cl.execute("SELECT ticker, cluster_name FROM stock_clusters").df()
+                cluster_map = dict(zip(df_sc["ticker"], df_sc["cluster_name"]))
+            con_cl.close()
+        except Exception:
+            pass
+
     target_alloc = config.target_allocations[profile_level]
     target_equity_share = target_alloc.equity
 
@@ -1249,7 +1302,13 @@ def generate_recommendations(
     # 6. Build RecommendationItem objects with factual explanations
     rec_items: list[RecommendationItem] = []
     for s in selected_dicts:
-        exp = build_explanation(s, eligible_df, portfolio, favoured_sectors=favoured_sectors)
+        exp = build_explanation(
+            s,
+            eligible_df,
+            portfolio,
+            favoured_sectors=favoured_sectors,
+            cluster_map=cluster_map,
+        )
         rec_items.append(
             RecommendationItem(
                 ticker=s["ticker"],
@@ -1334,7 +1393,7 @@ def generate_recommendations(
         f"Weights sum to {tot_sugg_weight*100:.1f}% of suggested stock basket, capped at {per_stock_cap*100:.0f}% per stock.",
         f"Target equity share for {target_alloc.label} (Level {profile_level}) is {target_equity_share*100:.0f}%.",
         "Educational decision support only. Not investment advice.",
-    ] + fav_notes
+    ] + fav_notes + ml_skipped_notes
 
     return RecommendationResult(
         recommendations=rec_items,

@@ -110,6 +110,26 @@ class RecommenderConfig:
 
 
 @dataclass(frozen=True)
+class MLFeatureConfig:
+    enabled: bool = True
+
+
+@dataclass(frozen=True)
+class ProjectionConfig:
+    enabled: bool = True
+    num_simulations: int = 5000
+    block_length_months: int = 6
+
+
+@dataclass(frozen=True)
+class MLConfig:
+    risk_outlook: MLFeatureConfig = field(default_factory=MLFeatureConfig)
+    clusters: MLFeatureConfig = field(default_factory=MLFeatureConfig)
+    market_sensitivity: MLFeatureConfig = field(default_factory=MLFeatureConfig)
+    projection: ProjectionConfig = field(default_factory=ProjectionConfig)
+
+
+@dataclass(frozen=True)
 class AppConfig:
     date_range: DateRangeConfig
     risk_free_rate: float
@@ -125,6 +145,7 @@ class AppConfig:
     recommender: RecommenderConfig = field(default_factory=RecommenderConfig)
     fund_recommender_weights: FundRecommenderWeightsConfig = field(default_factory=FundRecommenderWeightsConfig)
     benchmarks: BenchmarksConfig = field(default_factory=BenchmarksConfig)
+    ml: MLConfig = field(default_factory=MLConfig)
     universe: list[UniverseStock] = field(default_factory=list)
 
 
@@ -370,6 +391,37 @@ def load_universe(universe_path: str | Path | None = None) -> list[UniverseStock
     return stocks
 
 
+def _validate_ml(raw: Any) -> MLConfig:
+    """Validate and return ML configuration settings."""
+    if not isinstance(raw, dict):
+        return MLConfig()
+
+    ro_raw = raw.get("risk_outlook", {})
+    cl_raw = raw.get("clusters", {})
+    ms_raw = raw.get("market_sensitivity", {})
+    pr_raw = raw.get("projection", {})
+
+    ro = MLFeatureConfig(enabled=bool(ro_raw.get("enabled", True))) if isinstance(ro_raw, dict) else MLFeatureConfig()
+    cl = MLFeatureConfig(enabled=bool(cl_raw.get("enabled", True))) if isinstance(cl_raw, dict) else MLFeatureConfig()
+    ms = MLFeatureConfig(enabled=bool(ms_raw.get("enabled", True))) if isinstance(ms_raw, dict) else MLFeatureConfig()
+
+    if isinstance(pr_raw, dict):
+        pr = ProjectionConfig(
+            enabled=bool(pr_raw.get("enabled", True)),
+            num_simulations=int(pr_raw.get("num_simulations", 5000)),
+            block_length_months=int(pr_raw.get("block_length_months", 6)),
+        )
+    else:
+        pr = ProjectionConfig()
+
+    return MLConfig(
+        risk_outlook=ro,
+        clusters=cl,
+        market_sensitivity=ms,
+        projection=pr,
+    )
+
+
 def load_config(
     config_path: str | Path | None = None,
     universe_path: str | Path | None = None,
@@ -475,6 +527,7 @@ def load_config(
     recommender = _validate_recommender(data.get("recommender", {}))
     fund_recommender_weights = _validate_fund_recommender_weights(data.get("fund_recommender_weights", {}))
     benchmarks = _validate_benchmarks(data.get("benchmarks", {}))
+    ml = _validate_ml(data.get("ml", {}))
 
     universe: list[UniverseStock] = []
     if include_universe:
@@ -498,5 +551,6 @@ def load_config(
         recommender=recommender,
         fund_recommender_weights=fund_recommender_weights,
         benchmarks=benchmarks,
+        ml=ml,
         universe=universe,
     )

@@ -22,12 +22,16 @@ import streamlit as st
 from app.theme import (
     COLOR_WHITE,
     GAUGE_STEPS,
+    NEUTRAL_GREY,
     PRIMARY_TEAL,
     RISK_COLORS,
     RISK_LABELS,
+    TEAL_BG_OVERLAY,
     TRANSPARENT_BG,
+    WARNING_AMBER,
     apply_theme_to_plotly,
     format_date,
+    format_rupee,
     get_gauge_pointer_color,
     get_plotly_template,
     get_theme_mode,
@@ -298,3 +302,162 @@ def render_empty_state(title: str, message: str, action_label: str | None = None
 def render_disclaimer() -> None:
     """No-op following removal of educational disclaimer per Phase B6 requirements."""
     pass
+
+
+def render_projection_panel(
+    asset_weights: dict[str, float],
+    default_amount: float = 10000.0,
+    default_mode: str = "Monthly SIP",
+    default_horizon: int = 5,
+    key_prefix: str = "proj",
+) -> None:
+    """Render interactive scenario forecast panel with block-bootstrap Monte Carlo fan chart.
+
+    Adheres to:
+    - Feature flag check: silently returns if ml.projection.enabled is False.
+    - Plain investor wording: 'Weaker case', 'Typical case', 'Stronger case'.
+    - No statistical jargon, no p-values, no model names.
+    - Mandatory disclosure sentence directly below fan chart.
+    """
+    from src.config import load_config
+    cfg = load_config()
+    ml_cfg = getattr(cfg, "ml", None)
+    if not ml_cfg or not getattr(ml_cfg.projection, "enabled", False):
+        return
+
+    from src.projection.simulate import simulate_portfolio_projection
+
+    render_html("<div style='margin-bottom: 24px;'></div>")
+    st.subheader("What could this grow to?")
+    st.caption("Scenario projections based on how this asset mix behaved historically over various market cycles.")
+
+    c_mode, c_amt, c_horiz = st.columns([1.5, 1.5, 2])
+    with c_mode:
+        mode_idx = 1 if default_mode == "Monthly SIP" else 0
+        inv_mode = st.selectbox(
+            "Contribution Type",
+            options=["One-time investment", "Monthly SIP"],
+            index=mode_idx,
+            key=f"{key_prefix}_mode",
+            help="Choose between a single lump-sum investment or a recurring monthly systematic investment plan.",
+        )
+    with c_amt:
+        is_sip = (inv_mode == "Monthly SIP")
+        def_amt = 10000 if is_sip else 100000
+        step_val = 1000 if is_sip else 10000
+        min_val = 500 if is_sip else 5000
+        amt = st.number_input(
+            f"Amount (₹) ({'per month' if is_sip else 'starting lump sum'})",
+            min_value=min_val,
+            value=int(default_amount) if (default_amount and default_amount >= min_val) else def_amt,
+            step=step_val,
+            key=f"{key_prefix}_amt_{inv_mode}",
+        )
+    with c_horiz:
+        horizon = st.slider(
+            "Investment Horizon (Years)",
+            min_value=1,
+            max_value=15,
+            value=int(default_horizon) if 1 <= default_horizon <= 15 else 5,
+            step=1,
+            key=f"{key_prefix}_horizon",
+            help="Number of years you plan to keep this capital invested.",
+        )
+
+    try:
+        res = simulate_portfolio_projection(
+            asset_weights=asset_weights,
+            amount=float(amt),
+            horizon_years=int(horizon),
+            investment_mode=inv_mode,
+            random_seed=cfg.random_seed,
+        )
+    except Exception as exc:
+        st.warning(f"Could not calculate projection: {exc}")
+        return
+
+    freq_label = "per month" if inv_mode == "Monthly SIP" else "one-time"
+
+    # 4 Key Outcome Cards
+    m1, m2, m3, m4 = st.columns(4)
+    with m1:
+        st.metric("Total Money Put In", format_rupee(res.total_invested), help=f"Total capital contributed ({freq_label})")
+    with m2:
+        st.metric("Weaker Case (10th percentile)", format_rupee(res.final_p10), help="Challenging market conditions")
+    with m3:
+        st.metric("Typical Case (50th percentile)", format_rupee(res.final_p50), help="Median historical trajectory")
+    with m4:
+        st.metric("Stronger Case (90th percentile)", format_rupee(res.final_p90), help="Favorable market conditions")
+
+    # Plotly Fan Chart
+    t_df = res.timeline_df
+    fig_fan = go.Figure()
+
+    # Upper boundary: Stronger case (90th percentile)
+    fig_fan.add_trace(
+        go.Scatter(
+            x=t_df["year"],
+            y=t_df["p90"],
+            mode="lines",
+            line=dict(width=1.5, color=PRIMARY_TEAL, dash="dash"),
+            name="Stronger case (90th %ile)",
+            hovertemplate="Year %{x:.1f}: <b>₹%{y:,.0f}</b><extra></extra>",
+        )
+    )
+
+    # Shaded band fill down to Weaker case (10th percentile)
+    fig_fan.add_trace(
+        go.Scatter(
+            x=t_df["year"],
+            y=t_df["p10"],
+            mode="lines",
+            line=dict(width=1.5, color=WARNING_AMBER, dash="dash"),
+            fill="tonexty",
+            fillcolor=TEAL_BG_OVERLAY,
+            name="Weaker case (10th %ile)",
+            hovertemplate="Year %{x:.1f}: <b>₹%{y:,.0f}</b><extra></extra>",
+        )
+    )
+
+    # Middle trajectory: Typical case (50th percentile)
+    fig_fan.add_trace(
+        go.Scatter(
+            x=t_df["year"],
+            y=t_df["p50"],
+            mode="lines",
+            line=dict(width=2.5, color=PRIMARY_TEAL),
+            name="Typical case (50th %ile)",
+            hovertemplate="Year %{x:.1f}: <b>₹%{y:,.0f}</b><extra></extra>",
+        )
+    )
+
+    # Baseline: Total invested
+    fig_fan.add_trace(
+        go.Scatter(
+            x=t_df["year"],
+            y=t_df["total_invested"],
+            mode="lines",
+            line=dict(width=1.8, color=NEUTRAL_GREY, dash="dot"),
+            name="Total money put in",
+            hovertemplate="Year %{x:.1f}: <b>₹%{y:,.0f}</b><extra></extra>",
+        )
+    )
+
+    fig_fan.update_layout(
+        height=360,
+        margin=dict(l=20, r=20, t=30, b=20),
+        xaxis=dict(title="Years elapsed", dtick=1 if horizon <= 5 else 2),
+        yaxis=dict(title="Estimated Value (₹)"),
+        legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1),
+        hovermode="x unified",
+        paper_bgcolor=TRANSPARENT_BG,
+        plot_bgcolor=TRANSPARENT_BG,
+    )
+    apply_theme_to_plotly(fig_fan)
+    st.plotly_chart(fig_fan, use_container_width=True)
+
+    # Mandatory Disclosure Sentence directly under the chart
+    st.caption("Projections are based on historical return patterns reshuffled at random in 6-month blocks. They do not predict the future and do not guarantee returns.")
+    if res.warning:
+        st.info(f"ℹ️ {res.warning}")
+

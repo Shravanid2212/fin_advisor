@@ -33,8 +33,7 @@ config.yaml  README.md  requirements.txt
 9. Dates are ISO (YYYY-MM-DD) in storage and DD MMM YYYY in the UI. Currency uses the rupee
    sign with lakh/crore grouping in the UI.
 10. Every page shows 'Data as of <date>'. Recommendations keep neutral language without buy/sell advice.
-11. Recommender is rule-based and explainable. No black-box ML for ranking. Forecasts are
-    informational only.
+11. Ranking scores stay transparent and rule-based. ML may add labels and context, and may exclude stocks flagged 'risk rising' for profile levels 1 and 2 only.
 
 ## Code style
 Type hints, small pure functions, no notebooks logic duplicated in src (notebooks import from src).

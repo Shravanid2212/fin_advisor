@@ -1,106 +1,97 @@
-# Financial Market Analytics & Investment Decision Support System Configuration
-# Source of Truth: docs/PRD.md and AGENTS.md
-
-# 1. Historical Date Range
 date_range:
-  start: "2016-01-01"
-  end: "latest"
-
-# 2. Market Conventions & Financial Parameters
-risk_free_rate: 0.065  # 10-year G-Sec yield (6.5%)
-trading_days: 252      # Trading days per year for annualisation
-random_seed: 42        # Seed for reproducible simulations/optimisation
-
-# 3. Data Cleaning & Validation Thresholds
-extreme_z_threshold: 4.0        # Flag (|z| > 4) for genuine extreme returns
-spike_review_threshold: 0.20    # Flag daily moves > 20% for corporate actions
-min_history_years: 3            # Minimum listing history required for recommendation eligibility
-min_liquidity_traded_value: 10000000.0  # 60-day average daily traded value threshold (INR 1 Crore)
-
-# 4. Portfolio Concentration Limits
+  start: '2016-01-01'
+  end: latest
+risk_free_rate: 0.065
+trading_days: 252
+random_seed: 42
+extreme_z_threshold: 4.0
+spike_review_threshold: 0.2
+min_history_years: 3
+min_liquidity_traded_value: 10000000.0
 concentration_limits:
-  stock: 0.25   # Maximum 25% allocation to any single stock
-  sector: 0.40  # Maximum 40% allocation to any single sector
-
-# 5. Recommendation Engine Weights (Sum must equal 1.00)
+  stock: 0.25
+  sector: 0.4
 recommender_weights:
   sharpe: 0.35
-  drawdown: 0.20
+  drawdown: 0.2
   diversification: 0.25
-  sector_gap: 0.10
-  dividend_or_momentum: 0.10
-
+  sector_gap: 0.1
+  dividend_or_momentum: 0.1
 fund_recommender_weights:
-  sharpe: 0.40
-  drawdown: 0.30
-  consistency: 0.30
-
-# 6. Target Allocation Table by Risk Profile Level (PRD Section 11)
+  sharpe: 0.4
+  drawdown: 0.3
+  consistency: 0.3
 target_allocations:
   1:
-    label: "Conservative"
-    equity: 0.20
-    debt: 0.70
-    gold: 0.10
+    label: Conservative
+    equity: 0.2
+    debt: 0.7
+    gold: 0.1
     equity_split:
-      large: 1.00
-      mid: 0.00
-      small: 0.00
+      large: 1.0
+      mid: 0.0
+      small: 0.0
   2:
-    label: "Moderately Conservative"
+    label: Moderately Conservative
     equity: 0.35
     debt: 0.55
-    gold: 0.10
+    gold: 0.1
     equity_split:
-      large: 0.90
-      mid: 0.10
-      small: 0.00
+      large: 0.9
+      mid: 0.1
+      small: 0.0
   3:
-    label: "Moderate"
-    equity: 0.50
-    debt: 0.40
-    gold: 0.10
+    label: Moderate
+    equity: 0.5
+    debt: 0.4
+    gold: 0.1
     equity_split:
-      large: 0.70
+      large: 0.7
       mid: 0.25
       small: 0.05
   4:
-    label: "Moderately Aggressive"
-    equity: 0.70
+    label: Moderately Aggressive
+    equity: 0.7
     debt: 0.25
     gold: 0.05
     equity_split:
       large: 0.55
-      mid: 0.30
+      mid: 0.3
       small: 0.15
   5:
-    label: "Aggressive"
+    label: Aggressive
     equity: 0.85
-    debt: 0.10
+    debt: 0.1
     gold: 0.05
     equity_split:
-      large: 0.40
+      large: 0.4
       mid: 0.35
       small: 0.25
-
-# 7. Benchmark Indices
-# (^CRSLDX removed as midcap benchmark per Phase 1b audit; synthetic baskets defined for mid and small caps)
 benchmarks:
-  broad_market: "^NSEI"
-  midcap: "synthetic_midcap"
-  smallcap: "synthetic_smallcap"
-  synthetic_min_constituents_mid: 20    # at least 20 of 25 midcap stocks present (80%)
-  synthetic_min_constituents_small: 15  # at least 15 of 20 smallcap stocks present (75%)
-
-# 8. Recommender Engine Configuration (PRD Section 13)
+  broad_market: ^NSEI
+  midcap: synthetic_midcap
+  smallcap: synthetic_smallcap
+  synthetic_min_constituents_mid: 20
+  synthetic_min_constituents_small: 15
 recommender:
   max_recommendations: 8
   max_per_sector: 2
-  per_stock_weight_cap: 0.20  # 20% maximum per-stock weight cap in suggested stock basket
-  favoured_sector_bonus: 0.5  # Bonus in std deviations on composite z-score for favoured sectors
+  per_stock_weight_cap: 0.2
+  favoured_sector_bonus: 0.5
   profile_max_risk_bucket:
     1: 2
     2: 2
     3: 3
     4: 4
     5: 5
+ml:
+  risk_outlook:
+    enabled: false
+  clusters:
+    enabled: true
+  market_sensitivity:
+    enabled: true
+  projection:
+    enabled: true
+    num_simulations: 5000
+    block_length_months: 6

@@ -38,6 +38,7 @@ from app.components.ui import (
     render_empty_state,
     render_html,
     render_page_header,
+    render_projection_panel,
     render_risk_badge,
     require_login,
 )
@@ -45,6 +46,7 @@ from src.accounts.store import save_user_data
 from src.app_data import (
     check_db_health,
     get_all_universe_tickers,
+    get_fund_risk_outlook,
 )
 from src.config import load_config, load_universe
 from src.portfolio.analytics import analyze_portfolio
@@ -640,6 +642,11 @@ with tab_funds:
                         fund_amt_badge = f'<div style="font-size: 1.15rem; font-weight: 700; color: {PRIMARY_TEAL};">{format_pct(f_item.allocated_weight)}</div>'
                         sub_badge_lbl = "Category Weight"
 
+                    fund_outlook = get_fund_risk_outlook(str(f_item.scheme_code))
+                    outlook_badge_html = ""
+                    if fund_outlook and fund_outlook.get("outlook"):
+                        outlook_badge_html = f'&bull; <span style="background: {CARD_BG_OVERLAY}; color: var(--text-color); padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Outlook: {fund_outlook["outlook"]}</span>'
+
                     render_html(
                         f"""
                         <div class="kpi-card" style="min-height: 240px; border-left: 4px solid {ACCENT_BLUE}; margin-bottom: 16px;">
@@ -649,6 +656,7 @@ with tab_funds:
                                     <div style="font-size: 0.85rem; opacity: 0.75; margin-top: 4px;">
                                         {f_item.fund_house} &bull; 
                                         <span style="background: {TEAL_BG_OVERLAY}; color: {PRIMARY_TEAL}; padding: 2px 6px; border-radius: 4px; font-size: 0.75rem; font-weight: 600;">Direct Growth</span>
+                                        {outlook_badge_html}
                                     </div>
                                 </div>
                                 <div style="text-align: right;">
@@ -701,5 +709,19 @@ with tab_funds:
                             st.info(f"{f_item.name} is already in your portfolio funds.")
 
             render_html("<div style='margin-bottom: 20px;'></div>")
+
+# 13. Scenario Forecast Projection (Feature 4)
+rec_target_alloc = {
+    "equity": cfg.target_allocations[active_level].equity,
+    "debt": cfg.target_allocations[active_level].debt,
+    "gold": cfg.target_allocations[active_level].gold,
+}
+render_projection_panel(
+    asset_weights=rec_target_alloc,
+    default_amount=float(alloc_amount) if (alloc_amount and alloc_amount > 0) else (10000.0 if is_monthly_sip else 100000.0),
+    default_mode=investment_mode,
+    default_horizon=5,
+    key_prefix="rec_proj",
+)
 
 render_disclaimer()

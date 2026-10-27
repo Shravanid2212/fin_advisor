@@ -20,10 +20,17 @@ import numpy as np
 import pandas as pd
 
 from app.theme import (
+    ACCENT_BLUE,
+    AMBER_BG_OVERLAY,
+    BLUE_BG_OVERLAY,
+    CARD_BG_OVERLAY,
+    CARD_BORDER_OVERLAY,
     GREY_BAR_COLOR,
     NEGATIVE_RED,
     PRIMARY_TEAL,
     RED_BG_OVERLAY,
+    TEAL_BG_OVERLAY,
+    WARNING_AMBER,
     apply_theme_to_plotly,
     format_date,
     format_dividend_yield,
@@ -44,7 +51,10 @@ from app.components.ui import (
 from src.app_data import (
     check_db_health,
     get_all_universe_tickers,
+    get_market_sensitivity_info,
+    get_stock_cluster_info,
     get_stock_detail_data,
+    get_stock_risk_outlook,
 )
 
 st.set_page_config(
@@ -108,6 +118,21 @@ st.markdown("---")
 c_hdr1, c_hdr2, c_hdr3 = st.columns([3, 2, 2])
 
 with c_hdr1:
+    outlook_info = get_stock_risk_outlook(detail["ticker"])
+    outlook_badge = ""
+    if outlook_info:
+        ol_text = str(outlook_info.get("outlook", ""))
+        if ol_text == "Risk may be rising":
+            ol_color = WARNING_AMBER
+            ol_bg = AMBER_BG_OVERLAY
+        elif ol_text == "Risk may be easing":
+            ol_color = PRIMARY_TEAL
+            ol_bg = TEAL_BG_OVERLAY
+        else:
+            ol_color = ACCENT_BLUE
+            ol_bg = BLUE_BG_OVERLAY
+        outlook_badge = f'<span style="display: inline-block; padding: 2px 8px; border-radius: 4px; font-size: 0.8rem; font-weight: 600; color: {ol_color}; background: {ol_bg}; margin-left: 8px;">Outlook: {ol_text}</span>'
+
     render_html(
         f"""
         <div style="display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;">
@@ -118,6 +143,7 @@ with c_hdr1:
             <span style="font-size: 0.9rem; opacity: 0.8; margin-right: 12px;"><b>Sector:</b> {detail['sector']}</span>
             <span style="font-size: 0.9rem; opacity: 0.8; margin-right: 12px;"><b>Tier:</b> {detail['cap_class'].capitalize()} Cap</span>
             {render_risk_badge(detail['risk_bucket'])}
+            {outlook_badge}
         </div>
         """
     )
@@ -251,6 +277,19 @@ with col_gauge:
         """
     )
 
+    sens_info = get_market_sensitivity_info(detail["ticker"], asset_type="stock")
+    if sens_info and "plain_language" in sens_info:
+        pl = sens_info["plain_language"]
+        render_html(
+            f"""
+            <div style="margin-top: 10px; padding: 10px 12px; border-radius: 8px; background: {CARD_BG_OVERLAY}; border: 1px solid {CARD_BORDER_OVERLAY}; font-size: 0.85rem; line-height: 1.5;">
+                📊 <b>Market Sensitivity:</b><br>
+                • {pl['market_sync']}<br>
+                • {pl['market_amplification']}
+            </div>
+            """
+        )
+
     st.markdown("---")
     st.markdown("#### Company Fundamentals")
     st.caption("*Fundamentals reflect the latest available snapshot*")
@@ -349,5 +388,24 @@ if not peers_df.empty:
     )
 else:
     st.info("No other peer companies found in this sector within the universe.")
+
+# 9. Stocks that Behave Like This One (Behavior Groups / Clustering)
+cluster_info = get_stock_cluster_info(detail["ticker"])
+if cluster_info and cluster_info.get("similar_stocks"):
+    render_html("<div style='margin-bottom: 24px;'></div>")
+    st.subheader("Stocks that behave like this one")
+    c_group_name = cluster_info.get("cluster_name", "Similar Behavior Group")
+    st.caption(f"Identified through empirical clustering ({c_group_name}). Top 5 closest companies in volatility, market sensitivity, and momentum:")
+
+    sim_rows = []
+    for s_stock in cluster_info["similar_stocks"]:
+        sim_rows.append({
+            "Ticker": s_stock["ticker"],
+            "Company Name": s_stock["name"],
+            "Sector": s_stock["sector"],
+            "Annual Volatility": format_pct(s_stock["annual_volatility"]),
+            "Beta vs Nifty": format_ratio(s_stock["beta"]),
+        })
+    st.dataframe(pd.DataFrame(sim_rows), use_container_width=True, hide_index=True)
 
 render_disclaimer()
